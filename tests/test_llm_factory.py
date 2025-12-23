@@ -1,5 +1,3 @@
-import os
-
 import pytest
 
 from src.llm.client import get_llm_client

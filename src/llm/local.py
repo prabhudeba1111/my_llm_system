@@ -8,7 +8,8 @@ from src.utils import setup_logger
 
 
 class LocalLLM(BaseLLM):
-    def __init__(self):
+    def __init__(self, max_retries: int = 3):
+        self.max_retries = max_retries
         self.logger = setup_logger()
         self.url = "http://localhost:11434/v1/completions"
 
