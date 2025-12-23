@@ -7,7 +7,7 @@ from src.llm.models import LLMRequest
 async def main():
     llm = get_async_llm_client()
 
-    objects = ["chair", "table", "bed", "sofa", "carpet", "curtains"]
+    objects = ["chair", "table", "bed", "sofa", "carpet", "curtains", "door", "window", "stool", "bedsheet", "mattress", "shelf"]
 
     requests = [
         LLMRequest(prompt=f"Tell me about {i} in 10 words") for i in objects
