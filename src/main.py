@@ -1,5 +1,4 @@
 from src.config import settings
-from src.errors import LLMSystemError
 from src.llm.client import get_llm_client
 from src.llm.models import LLMFailure, LLMRequest
 from src.llm.prompts import user_prompt
