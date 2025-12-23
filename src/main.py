@@ -1,6 +1,6 @@
 from src.config import settings
 from src.errors import LLMSystemError
-from src.llm.client import LLMClient
+from src.llm.client import get_llm_client
 from src.llm.models import LLMFailure, LLMRequest
 from src.llm.prompts import user_prompt
 from src.utils import setup_logger
@@ -18,10 +18,10 @@ def run() -> int:
         # Placeholder for future LLM pipeline
         logger.info("System initialized successfully")
 
-        client = LLMClient()
+        client = get_llm_client()
 
         request = LLMRequest(
-            prompt=user_prompt("How is the day today?"),
+            prompt=user_prompt("How to drink water?"),
         )
 
         result = client.generate(request)
