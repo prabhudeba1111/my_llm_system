@@ -19,6 +19,7 @@ class LocalLLM(BaseLLM):
         payload = {
             "model": "phi",
             "prompt": request.prompt,
+            "temperature": 0.9,
             "max_tokens": 300
         }
 
