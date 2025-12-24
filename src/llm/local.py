@@ -20,7 +20,7 @@ class LocalLLM(BaseLLM):
             "model": "phi",
             "prompt": request.prompt,
             "temperature": 0.9,
-            "max_tokens": 300
+            "max_tokens": 50
         }
 
         try:

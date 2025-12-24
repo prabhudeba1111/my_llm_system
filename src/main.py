@@ -1,7 +1,8 @@
 from src.config import settings
 from src.llm.client import get_llm_client
 from src.llm.models import LLMFailure, LLMRequest
-from src.llm.prompts import user_prompt
+from src.llm.prompts import rag_prompt
+from src.rag.pipeline import RAGPipeline
 from src.utils import setup_logger
 
 
@@ -9,19 +10,21 @@ def run() -> int:
     logger = setup_logger()
 
     try:
-        logger.info("Starting LLM system")
-        logger.info(f"Environment: {settings.environment}")
-        logger.info(f"LLM Provider: {settings.llm_provider}")
-        logger.info(f"LLM Model: {settings.llm_model}")
+        logger.debug("Starting LLM system")
+        logger.debug(f"Environment: {settings.environment}")
+        logger.debug(f"LLM Provider: {settings.llm_provider}")
+        logger.debug(f"LLM Model: {settings.llm_model}")
+        logger.debug(f"LLM Mode: {settings.llm_mode}")
 
         # Placeholder for future LLM pipeline
         logger.info("System initialized successfully")
 
-        client = get_llm_client()
+        user_question = "What is python?"
+        rag = RAGPipeline(docs_path="data")
+        context = rag.retrieve(user_question)
+        request = LLMRequest(prompt=rag_prompt(context, user_question))
 
-        request = LLMRequest(
-            prompt=user_prompt("How to drink water?"),
-        )
+        client = get_llm_client()
 
         result = client.generate(request)
 
