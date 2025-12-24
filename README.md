@@ -92,6 +92,15 @@ You can configure the maximum number of retries for transient errors by passing 
 ```python
 llm = MockLLM(max_retries=5)
 ```
+
+## Running with Docker
+
+Build the image:
+
+```bash
+docker build -t my-llm-system .
+```
+
 ## Logging
 The MockLLM uses a Logger to provide detailed information about its operations. You can adjust the logging level as needed for your debugging purposes.
 
