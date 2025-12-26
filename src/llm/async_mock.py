@@ -5,7 +5,8 @@ import time
 from src.llm.base import AsyncBaseLLM
 from src.llm.models import LLMFailure, LLMRequest, LLMResponse
 from src.utils import setup_logger
-
+from src.config import settings
+from src.errors import TransientError, CallerError, FatalError
 
 class AsyncRateLimiter:
     def __init__(self, rate_per_sec: int):
@@ -25,8 +26,8 @@ class AsyncRateLimiter:
 class AsyncMockLLM(AsyncBaseLLM):
     def __init__(
         self,
-        max_retries: int = 3,
-        max_concurrency: int = 5,
+        max_retries: int = settings.max_retries,
+        max_concurrency: int = settings.max_concurrency,
         total_timeout: int = 10.0,
         rate_limiter_per_sec: int = 5,
     ):
@@ -47,7 +48,7 @@ class AsyncMockLLM(AsyncBaseLLM):
 
             except asyncio.TimeoutError:
                 return LLMFailure(
-                    reason="Total timeout budget exceeded", retryable=False
+                    reason="Total timeout budget exceeded", error_type=TransientError
                 )
 
     async def _generate_with_retries(
@@ -73,13 +74,13 @@ class AsyncMockLLM(AsyncBaseLLM):
                 if random.random() < 0.2:
                     return LLMFailure(
                         reason="Empty model output",
-                        retryable=False,
+                        error_type=TransientError
                     )
 
                 # Simulated Success
                 latency = (time.time() - start_time) * 1000
                 response = LLMResponse(
-                    text=f"[Async MOCK LLM] Response to: {request.prompt}",
+                    text=f"[Async MOCK LLM] Response: {request.prompt}",
                     tokens_used=len(request.prompt.split()),
                     latency_ms=latency,
                 )
@@ -94,19 +95,19 @@ class AsyncMockLLM(AsyncBaseLLM):
                 self.logger.warning("Async LLM request cancelled")
                 raise
 
+
+            except ValueError as e:
+                return LLMFailure(str(e), error_type=CallerError)
+            
             except TimeoutError as e:
                 self.logger.warning(f"Attempt {attempt}: timeout ({e})")
                 if attempt >= self.max_retries:
                     return LLMFailure(
                         reason=str(e),
-                        retryable=True,
+                        error_type=TransientError
                     )
 
             except Exception as e:
-                self.logger.error(f"Attempt {attempt}: failure ({e})")
-                return LLMFailure(
-                    reason=str(e),
-                    retryable=False,
-                )
+                return LLMFailure(str(e), error_type=FatalError)
 
-        return LLMFailure(reason="Unknown failure", retryable=False)
+        return LLMFailure(reason="Unknown failure", error_type=FatalError)

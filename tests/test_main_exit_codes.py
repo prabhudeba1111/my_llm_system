@@ -1,4 +1,6 @@
 from src import main
+from src.errors import CallerError, TransientError
+from src.llm.models import LLMResponse, LLMFailure
 
 
 def test_run_success(monkeypatch):
@@ -19,13 +21,21 @@ def test_run_known_failure(monkeypatch):
     assert main.run() == 1
 
 
+def test_caller_error_is_not_retryable():
+    failure = LLMFailure("bad input", CallerError)
+    assert not issubclass(failure.error_type, TransientError)
+
+
+def test_transient_error_is_retryable():
+    failure = LLMFailure("timeout", TransientError)
+    assert issubclass(failure.error_type, TransientError)
+
+
 class DummySuccessLLM:
     def generate(self, request):
-        from src.llm.models import LLMResponse
         return LLMResponse(text="ok")
 
 
 class DummyFailLLM:
     def generate(self, request):
-        from src.llm.models import LLMFailure
-        return LLMFailure("fail", retryable=False)
+        return LLMFailure("fail", error_type=TransientError)

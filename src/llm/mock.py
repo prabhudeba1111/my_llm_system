@@ -4,10 +4,11 @@ import time
 from src.llm.base import BaseLLM
 from src.llm.models import LLMFailure, LLMRequest, LLMResponse
 from src.utils import setup_logger
-
+from src.config import settings
+from src.errors import TransientError, CallerError, FatalError
 
 class MockLLM(BaseLLM):
-    def __init__(self, max_retries: int = 3):
+    def __init__(self, max_retries: int = settings.max_retries):
         self.max_retries = max_retries
         self.logger = setup_logger()
 
@@ -29,7 +30,7 @@ class MockLLM(BaseLLM):
                 if random.random() < 0.2:
                     return LLMFailure(
                         reason = "Empty model output",
-                        retryable = False
+                        error_type=TransientError
                     )
                 
                 # Simulated Success
@@ -43,7 +44,7 @@ class MockLLM(BaseLLM):
                 if not response.text.strip():
                     return LLMFailure(
                         reason="Empty model output",
-                        retryable=False,
+                        error_type=TransientError
                     )
 
                 self.logger.info(
@@ -52,13 +53,15 @@ class MockLLM(BaseLLM):
                 )
                 return response
             
+            except ValueError as e:
+                return LLMFailure(reason = str(e), error_type=CallerError)
+
             except TimeoutError as e:
                 self.logger.warning(f"Attempt {attempt}: timeout ({e})")
                 if attempt >= self.max_retries:
-                    return LLMFailure(reason = str(e), retryable = True)
+                    return LLMFailure(reason = str(e), error_type=TransientError)
                 
             except Exception as e:
-                self.logger.error(f"Attempt {attempt}: timeout ({e})")
-                return LLMFailure(reason = str(e), retryable = False)
+                return LLMFailure(reason = str(e), error_type=FatalError)
             
-        return LLMFailure(reason = "Unknown failure", retryable = False)
+        return LLMFailure(reason = "Unknown failure", error_type=FatalError)

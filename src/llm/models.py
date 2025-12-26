@@ -1,5 +1,8 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Type
+
+from src.errors import LLMSystemError
+from src.config import settings
 
 
 @dataclass
@@ -7,7 +10,7 @@ class LLMRequest:
     prompt: str
     max_token: int = 256
     temperature: float = 0.9
-    timeout_seconds: float = 60.0
+    timeout_seconds: float = settings.timeout_seconds
 
 @dataclass
 class LLMResponse:
@@ -18,4 +21,4 @@ class LLMResponse:
 @dataclass
 class LLMFailure:
     reason: str
-    retryable: bool
+    error_type: Type[LLMSystemError]
