@@ -5,16 +5,21 @@ import httpx
 from src.llm.base import BaseLLM
 from src.llm.models import LLMFailure, LLMRequest, LLMResponse
 from src.utils import setup_logger
-
+from src.config import settings
+from src.errors import TransientError, CallerError, FatalError
 
 class LocalLLM(BaseLLM):
-    def __init__(self, max_retries: int = 3):
+    def __init__(self, max_retries: int = settings.max_retries):
         self.max_retries = max_retries
         self.logger = setup_logger()
         self.url = "http://localhost:11434/v1/completions"
 
     def generate(self, request: LLMRequest) -> LLMResponse | LLMFailure:
         start_time = time.time()
+
+        if not request.prompt.strip():
+            return LLMFailure("Empty Prompt", error_type=CallerError)
+
 
         payload = {
             "model": "phi",
@@ -30,14 +35,14 @@ class LocalLLM(BaseLLM):
                 if response.status_code != 200:
                     return LLMFailure(
                         f"Local LLM HTTP {response.status_code}",
-                        retryable=False,
+                        error_type=FatalError
                     )
                 
                 data = response.json()
                 text = data["choices"][0]["text"]
                 
                 if not text.strip():
-                    return LLMFailure("Empty model output", retryable=False)
+                    return LLMFailure("Empty model output", error_type=TransientError)
                 
                 latency = (time.time() - start_time) * 1000
 
@@ -49,7 +54,7 @@ class LocalLLM(BaseLLM):
                 )
             
         except httpx.TimeoutException:
-            return LLMFailure("Local LLM timeout", retryable=True)
+            return LLMFailure("Local LLM timeout", error_type=TransientError)
 
         except Exception as e:
-            return LLMFailure(str(e), retryable=False)
+            return LLMFailure(str(e), error_type=FatalError)

@@ -1,7 +1,7 @@
 import asyncio
 
 from src.llm.async_client import get_async_llm_client
-from src.llm.models import LLMRequest
+from src.llm.models import LLMRequest, LLMResponse
 
 
 async def main():
@@ -18,7 +18,8 @@ async def main():
     )
 
     for i, result in enumerate(results):
-        print(f"{i} -> {result}")
+        if isinstance(result, LLMResponse):
+            print(f"{i} -> {result}")
 
 if __name__ == "__main__":
     asyncio.run(main())
