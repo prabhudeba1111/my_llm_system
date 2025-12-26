@@ -1,10 +1,19 @@
 class LLMSystemError(Exception):
     """Base exception for all LLM system errors."""
+    retryable: bool = False
+    exit_code: int = 2
 
 
-class ConfigurationError(LLMSystemError):
-    """Raised when configuration is invalid or missing."""
+class CallerError(LLMSystemError):
+    retryable = False
+    exit_code = 1
 
 
-class LLMExecutionError(LLMSystemError):
-    """Raised when an LLM call or pipeline fails."""
+class TransientError(LLMSystemError):
+    retryable = True
+    exit_code = 1
+
+
+class FatalError(LLMSystemError):
+    retryable = False
+    exit_code = 2

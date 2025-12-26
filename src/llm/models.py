@@ -1,5 +1,7 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Type
+
+from src.errors import LLMSystemError
 
 
 @dataclass
@@ -18,4 +20,4 @@ class LLMResponse:
 @dataclass
 class LLMFailure:
     reason: str
-    retryable: bool
+    error_type: Type[LLMSystemError]
