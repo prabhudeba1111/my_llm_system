@@ -1,6 +1,6 @@
 from src import main
 from src.errors import CallerError, TransientError
-from src.llm.models import LLMResponse, LLMFailure
+from src.llm.models import LLMFailure, LLMResponse
 
 
 def test_run_success(monkeypatch):

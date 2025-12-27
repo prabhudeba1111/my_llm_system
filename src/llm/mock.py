@@ -1,11 +1,12 @@
 import random
 import time
 
+from src.config import settings
+from src.errors import CallerError, FatalError, TransientError
 from src.llm.base import BaseLLM
 from src.llm.models import LLMFailure, LLMRequest, LLMResponse
 from src.utils import setup_logger
-from src.config import settings
-from src.errors import TransientError, CallerError, FatalError
+
 
 class MockLLM(BaseLLM):
     def __init__(self, max_retries: int = settings.max_retries):
