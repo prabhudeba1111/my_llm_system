@@ -2,11 +2,12 @@ import time
 
 import httpx
 
+from src.config import settings
+from src.errors import CallerError, FatalError, TransientError
 from src.llm.base import BaseLLM
 from src.llm.models import LLMFailure, LLMRequest, LLMResponse
 from src.utils import setup_logger
-from src.config import settings
-from src.errors import TransientError, CallerError, FatalError
+
 
 class LocalLLM(BaseLLM):
     def __init__(self, max_retries: int = settings.max_retries):
@@ -57,7 +58,7 @@ class LocalLLM(BaseLLM):
                         latency_ms=latency
                     )
                 
-            except ValueError as e:
+            except ValueError:
                 self.logger.warning(f"Attempt {attempt}: Empty Response")
                 if attempt >= self.max_retries:
                     return LLMFailure("Local LLM Empty Response", error_type=TransientError)
