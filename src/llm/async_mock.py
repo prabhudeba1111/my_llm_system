@@ -2,11 +2,12 @@ import asyncio
 import random
 import time
 
+from src.config import settings
+from src.errors import CallerError, FatalError, TransientError
 from src.llm.base import AsyncBaseLLM
 from src.llm.models import LLMFailure, LLMRequest, LLMResponse
 from src.utils import setup_logger
-from src.config import settings
-from src.errors import TransientError, CallerError, FatalError
+
 
 class AsyncRateLimiter:
     def __init__(self, rate_per_sec: int):

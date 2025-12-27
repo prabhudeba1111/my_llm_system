@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional, Type
 
-from src.errors import LLMSystemError
 from src.config import settings
+from src.errors import LLMSystemError
 
 
 @dataclass

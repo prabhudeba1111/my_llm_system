@@ -30,7 +30,7 @@ def validate_settings(settings) -> None:
         errors.append(f"Invalid LLM_MODE='{settings.llm_mode}'")
 
     if settings.max_retries < 0 or settings.max_retries > 10:
-        errors.append(f"MAX_RETRIES must be between 0 and 10")
+        errors.append("MAX_RETRIES must be between 0 and 10")
     
     if not settings.timeout_seconds > 0:
         errors.append("TIMEOUT_SECONDS must be > 0")
