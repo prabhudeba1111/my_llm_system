@@ -19,7 +19,7 @@ async def main():
 
     for i, result in enumerate(results):
         if isinstance(result, LLMResponse):
-            print(f"{i} -> {result}")
+            print(f"{i:>2} -> {result}")
 
 if __name__ == "__main__":
     asyncio.run(main())

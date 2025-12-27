@@ -7,13 +7,12 @@ from src.errors import LLMSystemError
 
 
 def run() -> int:
-    logger = setup_logger()
+    logger = setup_logger("data/log_file.logs")
     validate_settings(settings)
 
     try:
         logger.info("Starting LLM system")
 
-        # Placeholder for future LLM pipeline
         logger.info("System initialized successfully")
 
         client = get_llm_client()
