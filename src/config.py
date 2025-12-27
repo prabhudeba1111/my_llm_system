@@ -13,14 +13,14 @@ VALID_LLM_MODES = {"mock", "local"}
 class Settings(BaseModel):
     app_name: str = "my_llm_system"
 
-    llm_mode: str = os.getenv("LLM_MODE", "MOCK")
+    llm_mode: str = os.getenv("LLM_MODE", None)
     max_retries: int = int(os.getenv("MAX_RETRIES", None))
     timeout_seconds: float = float(os.getenv("TIMEOUT_SECONDS", None))
     max_concurrency: int = int(os.getenv("MAX_CONCURRENCY", None))
     
     openrouter_api_key: str | None = os.getenv("OPENROUTER_API_KEY", None)
 
-    log_level: str = os.getenv("LOG_LEVEL", "INFO")
+    log_level: str = os.getenv("LOG_LEVEL", None)
 
 
 def validate_settings(settings) -> None:
@@ -39,9 +39,9 @@ def validate_settings(settings) -> None:
         errors.append("MAX_CONCURRENCY must be > 0")
 
     if settings.log_level not in {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}:
-        errors.append("LOG_LEVEL must be one of {DEBUG, INFO, WARNING, ERROR, CRITICAL}")
+        settings.log_level = "INFO"
 
     if errors:
-        raise FatalError("Invalid configuration:\n- " + "\n- ".join(errors))
+        raise FatalError("\nInvalid configuration:\n- " + "\n- ".join(errors))
 
 settings = Settings()
