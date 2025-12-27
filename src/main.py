@@ -1,4 +1,4 @@
-from src.config import settings, validate_settings
+from src.config import settings, validate_settings, resolved_config
 from src.errors import LLMSystemError
 from src.llm.client import get_llm_client
 from src.llm.models import LLMFailure, LLMRequest
@@ -9,7 +9,7 @@ from src.utils import setup_logger
 def run() -> int:
     logger = setup_logger("data/log_file.logs")
     validate_settings(settings)
-
+    logger.debug(f"Resolved config: {resolved_config(settings)}")
     try:
         logger.info("Starting LLM system")
 

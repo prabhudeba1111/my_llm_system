@@ -13,7 +13,7 @@ class AsyncLocalLLM(AsyncBaseLLM):
     def __init__(self, max_retries: int = settings.max_retries):
         self.max_retries = max_retries
         self.logger = setup_logger()
-        self.url = "http://localhost:11434/v1/completions"
+        self.url = settings.local_llm_url
 
     async def generate(self, request: LLMRequest) -> LLMResponse | LLMFailure:
         start_time = time.time()
