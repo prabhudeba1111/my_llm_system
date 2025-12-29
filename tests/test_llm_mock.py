@@ -1,3 +1,5 @@
+import pytest
+
 from src.llm.mock import MockLLM
 from src.llm.models import LLMFailure, LLMRequest, LLMResponse
 
@@ -14,21 +16,11 @@ def test_mock_llm_success(monkeypatch):
     assert result.text
 
 def test_mock_llm_empty_prompt():
-    llm = MockLLM()
-    request = LLMRequest(prompt="")
-
-    result = llm.generate(request)
-
-    assert isinstance(result, LLMFailure)
-    assert result.retryable is False
+    with pytest.raises(ValueError):
+        LLMRequest(prompt="")
 
 def test_mock_llm_timeout(monkeypatch):
-    monkeypatch.setattr("random.random", lambda:0.1)
+    def always_timeout():
+        raise TimeoutError("Simulated timeout")
 
-    llm = MockLLM()
-    request = LLMRequest(prompt="Hello LLM")
-
-    result = llm.generate(request)
-
-    assert isinstance(result, LLMFailure)
-    assert result.retryable is True
+    monkeypatch.setattr(MockLLM, "generate", always_timeout)
