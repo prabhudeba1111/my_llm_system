@@ -8,16 +8,13 @@ from src.config import settings
 
 
 def setup_logger(log_file_path: Optional[str] = None, max_bytes: int = 10_485_760, backup_count: int = 5) -> logging.Logger:
-    try:
-        log_level = getattr(logging, settings.log_level.upper())
-    except AttributeError:
-        log_level = logging.INFO
-        temp_logger = logging.getLogger(__name__)
-        temp_logger.warning(f'Invalid "LOG_LEVEL"="{settings.log_level.upper()}", defaulting to INFO')
-    
+
+    log_level = getattr(logging, settings.log_level.upper())
+
     logger = logging.getLogger(settings.app_name)
     logger.setLevel(log_level)
 
+    # Configure logger only once to avoid duplicate handlers
     if logger.handlers:
         return logger
     

@@ -41,7 +41,7 @@ def validate_settings(settings) -> None:
         errors.append("MAX_CONCURRENCY must be > 0")
 
     if settings.log_level not in VALID_LOG_LEVELS:
-        settings.log_level = "INFO"
+        errors.append(f"Invalid LOG_LEVEL='{settings.log_level}'")
     
     if settings.llm_mode == "local" and not settings.local_llm_url:
         errors.append("LOCAL_LLM_URL is required when LLM_MODE=local")
