@@ -1,6 +1,6 @@
 import asyncio
 
-from src.llm.async_client import get_async_llm_client
+from src.llm.client import get_async_llm_client
 from src.llm.models import LLMRequest, LLMResponse
 
 

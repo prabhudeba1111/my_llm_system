@@ -1,13 +1,13 @@
-import os
-
 from src.config import settings
-from src.llm.base import BaseLLM
+from src.llm.async_local import AsyncLocalLLM
+from src.llm.async_mock import AsyncMockLLM
+from src.llm.base import AsyncBaseLLM, BaseLLM
 from src.llm.local import LocalLLM
 from src.llm.mock import MockLLM
 
 
 def get_llm_client() -> BaseLLM:
-    mode = os.getenv("LLM_MODE", "mock").lower()
+    mode = settings.llm_mode
 
     if mode == "mock":
         return MockLLM()
@@ -15,7 +15,13 @@ def get_llm_client() -> BaseLLM:
     if mode == "local":
         return LocalLLM()
 
-    raise ValueError(
-        f"Invalid LLM_MODE '{settings.llm_mode}'. "
-        "Expected 'mock' or 'local'."
-    )
+
+def get_async_llm_client() -> AsyncBaseLLM:
+    mode = settings.llm_mode
+
+    if mode == "mock":
+        return AsyncMockLLM()
+
+    if mode == "local":
+        return AsyncLocalLLM()
+
